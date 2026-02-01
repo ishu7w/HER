@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>A Journey of Love</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --rose: #ff6b9d;
+            --deep-rose: #c94277;
+            --cream: #fff5f7;
+            --gold: #ffd700;
+            --dark: #2d1b2e;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            transition: background 2s ease;
+            position: relative;
+        }
+
+        body.galaxy-theme {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+        }
+
+        /* 3D Background Canvas */
+        #canvas3d {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 2s ease;
+        }
+
+        .stars.active {
+            opacity: 1;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Animated Sparkles */
+        .sparkle-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 8;
+        }
+
+        .sparkle-animated {
+            position: absolute;
+            font-size: 20px;
+            animation: sparkleFloat 4s ease-in-out infinite;
+            opacity: 0;
+        }
+
+        @keyframes sparkleFloat {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(0) rotate(0deg);
+            }
+            20% {
+                opacity: 1;
+                transform: translateY(-20px) scale(1) rotate(90deg);
+            }
+            40% {
+                opacity: 0.8;
+                transform: translateY(-40px) scale(1.2) rotate(180deg);
+            }
+            60% {
+                opacity: 0.6;
+                transform: translateY(-60px) scale(0.9) rotate(270deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(0) rotate(360deg);
+            }
+        }
+
+        /* Glitter Animation */
+        .glitter-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: linear-gradient(45deg, #fff, #ffd700, #fff);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: glitterShine 2s ease-in-out infinite;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+
+        @keyframes glitterShine {
+            0%, 100% {
+                opacity: 0;
+                transform: scale(0) rotate(0deg);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.5) rotate(180deg);
+            }
+        }
+
+        .screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
+            z-index: 10;
+            padding: 20px;
+        }
+
+        .screen.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .content {
+            text-align: center;
+            perspective: 1000px;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: clamp(30px, 5vw, 60px) clamp(25px, 4vw, 50px);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+            transform-style: preserve-3d;
+            animation: floatIn 1.2s ease-out;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            transition: background 1s ease, border 1s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .galaxy-theme .card {
+            background: rgba(30, 30, 60, 0.9);
+            border: 2px solid rgba(102, 126, 234, 0.5);
+        }
+
+        @keyframes floatIn {
+            from {
+                transform: translateY(100px) rotateX(-20deg);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) rotateX(0);
+                opacity: 1;
+            }
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--rose), var(--deep-rose));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            animation: shimmer 3s infinite;
+            position: relative;
+        }
+
+        .galaxy-theme h1 {
+            background: linear-gradient(135deg, #667eea, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { filter: brightness(1) drop-shadow(0 0 10px rgba(255, 107, 157, 0.5)); }
+            50% { filter: brightness(1.3) drop-shadow(0 0 20px rgba(255, 107, 157, 0.8)); }
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            color: var(--dark);
+            margin-bottom: 20px;
+            font-weight: 600;
+            transition: color 1s ease;
+        }
+
+        .galaxy-theme h2 {
+            color: #f093fb;
+            text-shadow: 0 0 20px rgba(240, 147, 251, 0.5);
+        }
+
+        p {
+            font-size: clamp(1.1rem, 3vw, 1.5rem);
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            transition: color 1s ease;
+        }
+
+        .galaxy-theme p {
+            color: #ddd;
+        }
+
+        .heart-btn {
+            background: linear-gradient(135deg, var(--rose), var(--deep-rose));
+            color: white;
+            border: none;
+            padding: clamp(15px, 3vw, 20px) clamp(40px, 8vw, 60px);
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            font-family: 'Playfair Display', serif;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 107, 157, 0.4);
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
+
+        .galaxy-theme .heart-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .heart-btn:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .heart-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(255, 107, 157, 0.6);
+        }
+
+        .galaxy-theme .heart-btn:hover {
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+        }
+
+        .heart-btn:hover:before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .heart-btn:active {
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .no-btn {
+            background: transparent;
+            border: 2px solid var(--rose);
+            color: var(--rose);
+            margin-left: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .galaxy-theme .no-btn {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .no-btn:hover {
+            background: var(--rose);
+            color: white;
+            transform: translateY(-5px) scale(1.05);
+        }
+
+        .galaxy-theme .no-btn:hover {
+            background: #667eea;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .floating-hearts {
+            position: fixed;
+            width: 30px;
+            height: 30px;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .floating-hearts path {
+            fill: var(--rose);
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-1000px) rotate(360deg) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .petal {
+            position: fixed;
+            pointer-events: none;
+            z-index: 5;
+            will-change: transform;
+        }
+
+        @keyframes petalFall {
+            0% {
+                transform: translateY(-100px) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) translateX(var(--swing)) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .envelope {
+            width: clamp(150px, 40vw, 200px);
+            height: clamp(112px, 30vw, 150px);
+            position: relative;
+            margin: 30px auto;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .envelope:hover {
+            transform: scale(1.1) translateY(-10px);
+        }
+
+        .envelope-body {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ffeef5, #fff);
+            border: 3px solid var(--rose);
+            position: relative;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(255, 107, 157, 0.3);
+        }
+
+        .envelope-flap {
+            width: 0;
+            height: 0;
+            border-left: clamp(77px, 20vw, 103px) solid transparent;
+            border-right: clamp(77px, 20vw, 103px) solid transparent;
+            border-top: clamp(60px, 15vw, 80px) solid var(--rose);
+            position: absolute;
+            top: 0;
+            left: -3px;
+            transform-origin: top center;
+            transition: transform 0.6s ease;
+            border-radius: 3px 3px 0 0;
+        }
+
+        .envelope.open .envelope-flap {
+            transform: rotateX(180deg);
+        }
+
+        .letter {
+            position: absolute;
+            width: 85%;
+            height: 120%;
+            background: white;
+            top: -10%;
+            left: 7.5%;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.8s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+            color: var(--dark);
+        }
+
+        .envelope.open .letter {
+            top: -150%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .message-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .message-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 245, 247, 0.9));
+            padding: clamp(20px, 4vw, 30px);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            border: 2px solid rgba(255, 107, 157, 0.2);
+            opacity: 0;
+            transform: translateY(50px);
+            animation: slideUp 0.6s ease forwards;
+        }
+
+        .galaxy-theme .message-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+
+        .message-card:nth-child(1) { animation-delay: 0.1s; }
+        .message-card:nth-child(2) { animation-delay: 0.2s; }
+        .message-card:nth-child(3) { animation-delay: 0.3s; }
+        .message-card:nth-child(4) { animation-delay: 0.4s; }
+        .message-card:nth-child(5) { animation-delay: 0.5s; }
+        .message-card:nth-child(6) { animation-delay: 0.6s; }
+
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(255, 107, 157, 0.3);
+        }
+
+        .galaxy-theme .message-card:hover {
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.5);
+        }
+
+        .message-card h3 {
+            color: var(--rose);
+            font-size: clamp(1.3rem, 3vw, 1.8rem);
+            margin-bottom: 10px;
+            font-family: 'Playfair Display', serif;
+            transition: color 1s ease;
+        }
+
+        .galaxy-theme .message-card h3 {
+            color: #667eea;
+        }
+
+        .message-card p {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            margin-bottom: 0;
+        }
+
+        .final-message {
+            font-size: clamp(1.3rem, 3.5vw, 2rem);
+            line-height: 2;
+            animation: fadeInScale 1s ease-out;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .signature {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 600;
+            margin-top: 30px;
+            background: linear-gradient(135deg, #667eea, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInScale 1.5s ease-out 0.5s backwards;
+            filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.5));
+        }
+
+        /* Video Container */
+        .video-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 90vw;
+            max-width: 900px;
+            height: 0;
+            background: rgba(0, 0, 0, 0.95);
+            border-radius: 20px;
+            z-index: 200;
+            opacity: 0;
+            transition: all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .video-container.active {
+            transform: translate(-50%, -50%) scale(1);
+            height: 80vh;
+            max-height: 600px;
+            opacity: 1;
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-wrapper video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 20px;
+        }
+
+        .video-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        .video-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0);
+            z-index: 199;
+            pointer-events: none;
+            transition: background 0.8s ease;
+        }
+
+        .video-overlay.active {
+            background: rgba(0, 0, 0, 0.8);
+            pointer-events: all;
+        }
+
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            .buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .no-btn {
+                margin-left: 0;
+            }
+
+            .message-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .card {
+                margin: 10px;
+            }
+
+            .envelope {
+                margin: 20px auto;
+            }
+
+            .video-container {
+                width: 95vw;
+                padding: 10px;
+            }
+
+            .video-container.active {
+                height: 60vh;
+            }
+
+            .video-close {
+                width: 35px;
+                height: 35px;
+                font-size: 20px;
+                top: 10px;
+                right: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .screen {
+                padding: 15px;
+            }
+
+            h1 {
+                margin-bottom: 15px;
+            }
+
+            .message-card {
+                padding: 20px;
+            }
+
+            .video-container.active {
+                height: 50vh;
+            }
+        }
+
+        @media (hover: none) {
+            .heart-btn:hover {
+                transform: none;
+            }
+
+            .heart-btn:active {
+                transform: scale(0.95);
+            }
+
+            .message-card:hover {
+                transform: none;
+            }
+        }
+
+        /* Performance optimizations */
+        .screen, .card, .video-container {
+            will-change: transform, opacity;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <audio id="backgroundMusic" loop preload="auto" playsinline muted>
+    <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Sparkle Container -->
+    <div class="sparkle-container" id="sparkleContainer"></div>
+
+    <div class="stars" id="stars"></div>
+    
+    <!-- 3D Canvas Background -->
+    <canvas id="canvas3d"></canvas>
+
+    <!-- Video Overlay -->
+    <div class="video-overlay" id="videoOverlay" onclick="closeVideo()"></div>
+
+    <!-- Video Container -->
+    <div class="video-container" id="videoContainer">
+        <div class="video-wrapper">
+            <button class="video-close" onclick="closeVideo()">×</button>
+            <video id="mainVideo" controls>
+                <source src="video.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+
+    <!-- Screen 1: Welcome -->
+    <div class="screen active" id="screen1">
+        <div class="content">
+            <div class="card">
+                <h1>✨ A Special Moment ✨</h1>
+                <p>I have something important to share with you...</p>
+                <button class="heart-btn" onclick="goToScreen(2)">Click to Continue ❤️</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screen 2: Question -->
+    <div class="screen" id="screen2">
+        <div class="content">
+            <div class="card">
+                <h2>💝 Will You Be My Valentine? 💝</h2>
+                <p>This is a question from my heart to yours...</p>
+                <div class="buttons">
+                    <button class="heart-btn" onclick="handleYes()">Yes! 💕</button>
+                    <button class="heart-btn no-btn" id="noBtn">Maybe Not... 🥺</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screen 3: Open Letter -->
+    <div class="screen" id="screen3">
+        <div class="content">
+            <div class="card">
+                <h2>💌 Open Your Letter 💌</h2>
+                <div class="envelope" id="envelope" onclick="openEnvelope()">
+                    <div class="envelope-flap"></div>
+                    <div class="letter">Click the envelope!</div>
+                    <div class="envelope-body"></div>
+                </div>
+                <p style="margin-top: 20px;">Click the envelope to reveal your message</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screen 4: Reasons Why -->
+    <div class="screen" id="screen4">
+        <div class="content">
+            <div class="card">
+                <h2>Here's Why You're Amazing</h2>
+                <div class="message-grid">
+                    <div class="message-card">
+                        <h3>✨ Your Smile</h3>
+                        <p>It lights up my entire world</p>
+                    </div>
+                    <div class="message-card">
+                        <h3>💫 Your Kindness</h3>
+                        <p>The way you care touches my soul</p>
+                    </div>
+                    <div class="message-card">
+                        <h3>🌟 Your Laugh</h3>
+                        <p>It's the most beautiful sound</p>
+                    </div>
+                    <div class="message-card">
+                        <h3>💖 Your Heart</h3>
+                        <p>So pure and full of love</p>
+                    </div>
+                    <div class="message-card">
+                        <h3>🎨 Your Uniqueness</h3>
+                        <p>No one else like you exists</p>
+                    </div>
+                    <div class="message-card">
+                        <h3>🌹 Your Presence</h3>
+                        <p>Makes everything better</p>
+                    </div>
+                </div>
+                <button class="heart-btn" style="margin-top: 30px;" onclick="goToScreen(5)">Continue 💝</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screen 5: Final Message -->
+    <div class="screen" id="screen5">
+        <div class="content">
+            <div class="card">
+                <h1>Thank You 💕</h1>
+                <p class="final-message">
+                    For being you.<br>
+                    For choosing me.<br>
+                    For making every moment magical.<br>
+                    You are my forever Valentine. ✨
+                </p>
+                <p class="signature">Love from Ishu</p>
+                <button class="heart-btn" onclick="showVideo()">Click If You Trust 🎬</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 3D Background with Three.js-like implementation
+        const canvas3d = document.getElementById('canvas3d');
+        const ctx3d = canvas3d.getContext('2d');
+        let width, height;
+        let particles3d = [];
+        let mouseX = 0, mouseY = 0;
+        let time = 0;
+
+        function resize3D() {
+            width = canvas3d.width = window.innerWidth;
+            height = canvas3d.height = window.innerHeight;
+        }
+
+        class Particle3D {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = (Math.random() - 0.5) * width;
+                this.y = (Math.random() - 0.5) * height;
+                this.z = Math.random() * 2000;
+                this.vz = -2;
+                this.color = `hsla(${Math.random() * 60 + 280}, 70%, 70%, 0.8)`;
+                this.size = Math.random() * 2 + 1;
+            }
+
+            update() {
+                this.z += this.vz;
+                
+                // Mouse interaction in 3D space
+                const dx = mouseX - width / 2;
+                const dy = mouseY - height / 2;
+                this.x += dx * 0.0001;
+                this.y += dy * 0.0001;
+
+                if (this.z < 1) {
+                    this.reset();
+                    this.z = 2000;
+                }
+            }
+
+            draw() {
+                const scale = 1000 / this.z;
+                const x2d = this.x * scale + width / 2;
+                const y2d = this.y * scale + height / 2;
+                const size = this.size * scale;
+
+                if (x2d < 0 || x2d > width || y2d < 0 || y2d > height) return;
+
+                const opacity = 1 - this.z / 2000;
+                ctx3d.fillStyle = this.color.replace('0.8', opacity);
+                ctx3d.beginPath();
+                ctx3d.arc(x2d, y2d, size, 0, Math.PI * 2);
+                ctx3d.fill();
+
+                // Draw connections
+                particles3d.forEach(p => {
+                    if (p === this) return;
+                    const dist = Math.hypot(this.x - p.x, this.y - p.y, this.z - p.z);
+                    if (dist < 300) {
+                        const x2 = p.x * (1000 / p.z) + width / 2;
+                        const y2 = p.y * (1000 / p.z) + height / 2;
+                        ctx3d.strokeStyle = `rgba(255, 107, 157, ${0.15 * (1 - dist / 300)})`;
+                        ctx3d.lineWidth = 0.5;
+                        ctx3d.beginPath();
+                        ctx3d.moveTo(x2d, y2d);
+                        ctx3d.lineTo(x2, y2);
+                        ctx3d.stroke();
+                    }
+                });
+            }
+        }
+
+        function init3D() {
+            resize3D();
+            const count = window.innerWidth < 768 ? 80 : 150;
+            particles3d = [];
+            for (let i = 0; i < count; i++) {
+                particles3d.push(new Particle3D());
+            }
+        }
+
+        function animate3D() {
+            ctx3d.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx3d.fillRect(0, 0, width, height);
+
+            time += 0.01;
+
+            particles3d.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            requestAnimationFrame(animate3D);
+        }
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (e.touches[0]) {
+                mouseX = e.touches[0].clientX;
+                mouseY = e.touches[0].clientY;
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            resize3D();
+        });
+
+        init3D();
+        animate3D();
+
+        // Animated Sparkles
+        function createAnimatedSparkles() {
+            const sparkleContainer = document.getElementById('sparkleContainer');
+            const sparkleCount = window.innerWidth < 768 ? 10 : 20;
+            
+            for (let i = 0; i < sparkleCount; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle-animated';
+                sparkle.innerHTML = ['✨', '💫', '⭐', '🌟'][Math.floor(Math.random() * 4)];
+                sparkle.style.left = Math.random() * 100 + '%';
+                sparkle.style.top = Math.random() * 100 + '%';
+                sparkle.style.animationDelay = Math.random() * 4 + 's';
+                sparkleContainer.appendChild(sparkle);
+            }
+        }
+
+        // Glitter Particles
+        function createGlitterParticles() {
+            const sparkleContainer = document.getElementById('sparkleContainer');
+            const glitterCount = window.innerWidth < 768 ? 15 : 30;
+            
+            for (let i = 0; i < glitterCount; i++) {
+                const glitter = document.createElement('div');
+                glitter.className = 'glitter-particle';
+                glitter.style.left = Math.random() * 100 + '%';
+                glitter.style.top = Math.random() * 100 + '%';
+                glitter.style.animationDelay = Math.random() * 2 + 's';
+                sparkleContainer.appendChild(glitter);
+            }
+        }
+
+        createAnimatedSparkles();
+        createGlitterParticles();
+
+        // Create Stars
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const starCount = window.innerWidth < 768 ? 80 : 150;
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = (Math.random() * 3) + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        createStars();
+
+        // Navigation
+        let currentScreen = 1;
+        const music = document.getElementById('backgroundMusic');
+
+        function transitionToGalaxy() {
+            document.body.classList.add('galaxy-theme');
+            document.getElementById('stars').classList.add('active');
+            
+            particles3d.forEach(p => {
+                p.color = `hsla(${Math.random() * 60 + 240}, 70%, 70%, 0.8)`;
+            });
+        }
+
+        function goToScreen(screenNum) {
+            document.getElementById(`screen${currentScreen}`).classList.remove('active');
+            currentScreen = screenNum;
+            document.getElementById(`screen${screenNum}`).classList.add('active');
+            
+            if (screenNum === 4) {
+                setTimeout(transitionToGalaxy, 1000);
+            }
+            
+            createFloatingHearts();
+            createSakuraPetals();
+        }
+
+        // Handle Yes Button
+   function handleYes() {
+    music.muted = false;
+    music.volume = 0.7;
+
+    music.play().then(() => {
+        musicStarted = true;
+    }).catch(() => {
+        const resumeMusic = () => {
+            music.play().then(() => {
+                musicStarted = true;
+                document.removeEventListener('click', resumeMusic);
+                document.removeEventListener('touchstart', resumeMusic);
+            }).catch(() => {});
+        };
+        document.addEventListener('click', resumeMusic);
+        document.addEventListener('touchstart', resumeMusic);
+    });
+
+    goToScreen(3);
+    createMassiveHeartExplosion();
+    createSakuraStorm();
+}
+
+
+        // No Button
+        const noBtn = document.getElementById('noBtn');
+        let noBtnSize = 1;
+        let noBtnClicks = 0;
+
+        function moveNoButton() {
+            noBtnClicks++;
+            noBtnSize = Math.max(0.3, noBtnSize - 0.15);
+            noBtn.style.transform = `scale(${noBtnSize})`;
+            
+            const maxX = window.innerWidth - noBtn.offsetWidth - 50;
+            const maxY = window.innerHeight - noBtn.offsetHeight - 50;
+            const randomX = Math.max(50, Math.random() * maxX);
+            const randomY = Math.max(50, Math.random() * maxY);
+            
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+
+            if (noBtnClicks >= 3) {
+                noBtn.textContent = "Okay fine, YES! 💖";
+                noBtn.onclick = handleYes;
+            }
+        }
+
+        noBtn.addEventListener('mouseenter', moveNoButton);
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            moveNoButton();
+        });
+
+        // Envelope
+        let envelopeOpened = false;
+        function openEnvelope() {
+            if (!envelopeOpened) {
+                document.getElementById('envelope').classList.add('open');
+                envelopeOpened = true;
+                setTimeout(() => {
+                    goToScreen(4);
+                }, 1500);
+            }
+        }
+
+        // Video Functions
+       function showVideo() {
+    const videoContainer = document.getElementById('videoContainer');
+    const videoOverlay = document.getElementById('videoOverlay');
+    const mainVideo = document.getElementById('mainVideo');
+
+    // Pause background music
+    if (!music.paused) {
+        music.pause();
+    }
+
+    createMassiveHeartExplosion();
+    createSakuraStorm();
+
+    videoOverlay.classList.add('active');
+    videoContainer.classList.add('active');
+
+    // Force user-gesture safe playback
+    mainVideo.currentTime = 0;
+    mainVideo.muted = false;
+    mainVideo.volume = 1;
+
+    setTimeout(() => {
+        mainVideo.play().catch(() => {
+            // fallback: play on next interaction
+            const playVideo = () => {
+                mainVideo.play().then(() => {
+                    document.removeEventListener('click', playVideo);
+                    document.removeEventListener('touchstart', playVideo);
+                }).catch(() => {});
+            };
+            document.addEventListener('click', playVideo);
+            document.addEventListener('touchstart', playVideo);
+        });
+    }, 300);
+}
+
+
+       function closeVideo() {
+    const videoContainer = document.getElementById('videoContainer');
+    const videoOverlay = document.getElementById('videoOverlay');
+    const mainVideo = document.getElementById('mainVideo');
+
+    mainVideo.pause();
+    mainVideo.currentTime = 0;
+
+    videoContainer.classList.remove('active');
+    videoOverlay.classList.remove('active');
+
+    // Resume music smoothly
+    if (musicStarted) {
+        music.play().catch(() => {});
+    }
+}
+
+        // SVG Sakura Petal
+        function createSVGPetal() {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('width', '25');
+            svg.setAttribute('height', '25');
+            svg.setAttribute('viewBox', '0 0 30 30');
+            svg.classList.add('petal');
+            
+            const colors = ['#ffb7d5', '#ffc0e5', '#ffd4ed', '#ffe5f5', '#f9a8d4'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            
+            svg.innerHTML = `
+                <g transform="translate(15,15)">
+                    <path d="M0,-10 Q5,-8 7,-3 Q8,0 7,3 Q5,8 0,10 Q-3,8 -5,5 Q-7,2 -7,0 Q-7,-3 -5,-5 Q-3,-8 0,-10Z" 
+                          fill="${color}" 
+                          opacity="0.85"
+                          stroke="#ff69b4" 
+                          stroke-width="0.5"/>
+                    <ellipse cx="0" cy="0" rx="2" ry="3" fill="#fff" opacity="0.5"/>
+                </g>
+            `;
+            
+            return svg;
+        }
+
+        function createSakuraPetals() {
+            const count = window.innerWidth < 768 ? 2 : 3;
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const petal = createSVGPetal();
+                    const startX = Math.random() * window.innerWidth;
+                    const duration = 10 + Math.random() * 8;
+                    const swing = (Math.random() - 0.5) * 300;
+                    
+                    petal.style.left = startX + 'px';
+                    petal.style.setProperty('--swing', swing + 'px');
+                    petal.style.animation = `petalFall ${duration}s linear forwards`;
+                    
+                    document.body.appendChild(petal);
+                    
+                    setTimeout(() => petal.remove(), duration * 1000);
+                }, i * 1500);
+            }
+        }
+
+        function createSakuraStorm() {
+            const count = window.innerWidth < 768 ? 12 : 20;
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const petal = createSVGPetal();
+                    const startX = Math.random() * window.innerWidth;
+                    const duration = 8 + Math.random() * 5;
+                    const swing = (Math.random() - 0.5) * 400;
+                    const scale = 0.6 + Math.random() * 0.7;
+                    
+                    petal.style.left = startX + 'px';
+                    petal.style.setProperty('--swing', swing + 'px');
+                    petal.style.animation = `petalFall ${duration}s linear forwards`;
+                    petal.style.transform = `scale(${scale})`;
+                    
+                    document.body.appendChild(petal);
+                    
+                    setTimeout(() => petal.remove(), duration * 1000);
+                }, i * 250);
+            }
+        }
+
+        function createFloatingHearts() {
+            const count = window.innerWidth < 768 ? 4 : 6;
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const heart = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                    heart.setAttribute('class', 'floating-hearts');
+                    heart.setAttribute('viewBox', '0 0 32 32');
+                    heart.innerHTML = '<path d="M16 28s-10-7-10-14c0-4 3-7 7-7 2.5 0 3 2 3 2s.5-2 3-2c4 0 7 3 7 7 0 7-10 14-10 14z"/>';
+                    heart.style.left = Math.random() * 100 + '%';
+                    heart.style.top = '100%';
+                    heart.style.animation = `floatUp ${3 + Math.random() * 2}s ease-out forwards`;
+                    document.body.appendChild(heart);
+
+                    setTimeout(() => heart.remove(), 5000);
+                }, i * 400);
+            }
+        }
+
+        function createMassiveHeartExplosion() {
+            const count = window.innerWidth < 768 ? 12 : 18;
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const heart = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                    heart.setAttribute('class', 'floating-hearts');
+                    heart.setAttribute('viewBox', '0 0 32 32');
+                    heart.innerHTML = '<path d="M16 28s-10-7-10-14c0-4 3-7 7-7 2.5 0 3 2 3 2s.5-2 3-2c4 0 7 3 7 7 0 7-10 14-10 14z"/>';
+                    heart.style.left = Math.random() * 100 + '%';
+                    heart.style.top = '100%';
+                    heart.style.animation = `floatUp ${2.5 + Math.random() * 1.5}s ease-out forwards`;
+                    const size = 20 + Math.random() * 25;
+                    heart.style.width = size + 'px';
+                    heart.style.height = size + 'px';
+                    document.body.appendChild(heart);
+
+                    setTimeout(() => heart.remove(), 5000);
+                }, i * 150);
+            }
+        }
+
+        // Initial effects
+        createFloatingHearts();
+        createSakuraPetals();
+        
+        setInterval(() => {
+            createFloatingHearts();
+            createSakuraPetals();
+        }, 12000);
+
+        // Music playback
+        let musicStarted = false;
+        const tryPlayMusic = () => {
+            if (!musicStarted && currentScreen >= 3) {
+                music.play().then(() => {
+                    musicStarted = true;
+                }).catch(e => {});
+            }
+        };
+        
+        document.addEventListener('click', tryPlayMusic);
+        document.addEventListener('touchstart', tryPlayMusic);
+
+        // Cleanup on visibility change for performance
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                music.pause();
+            } else if (musicStarted && currentScreen >= 3) {
+                music.play().catch(e => {});
+            }
+        });
+    </script>
+</body>
+</html>
